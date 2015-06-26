@@ -70,6 +70,7 @@ PACKAGES_TO_ADD=(
     "app-portage/eix"
     "net-misc/rsync"
     "app-crypt/gnupg"
+    "sys-devel/gcc"
 )
 
 rsync -av -H -A -X --delete-during "rsync://rsync.at.gentoo.org/gentoo-portage/licenses/" "/usr/portage/licenses/"
