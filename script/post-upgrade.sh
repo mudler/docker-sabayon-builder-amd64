@@ -71,6 +71,7 @@ PACKAGES_TO_ADD=(
     "net-misc/rsync"
     "app-crypt/gnupg"
     "sys-devel/gcc"
+    "app-admin/sudo"
 )
 
 rsync -av -H -A -X --delete-during "rsync://rsync.at.gentoo.org/gentoo-portage/licenses/" "/usr/portage/licenses/"
