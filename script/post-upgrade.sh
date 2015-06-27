@@ -82,6 +82,7 @@ equo i "${PACKAGES_TO_ADD[@]}"
 
 # Configuring layman
 mkdir /etc/portage/repos.conf/
+mkdir /var/lib/layman/
 layman-updater -R
 
 # Merging defaults configurations
@@ -102,8 +103,8 @@ rm -rf /etc/ssh/*_key*
 # Configuring for build
 echo "*" > /etc/eix-sync.conf
 eix-sync
-layman -a sabayon
-echo "y" | layman -a sabayon-distro
+echo "y" | layman -f -a sabayon
+echo "y" | layman -f -a sabayon-distro
 
 # remove LDAP keys
 rm -f /etc/openldap/ssl/ldap.pem /etc/openldap/ssl/ldap.key \
