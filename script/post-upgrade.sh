@@ -61,6 +61,7 @@ FILES_TO_REMOVE=(
 )
 
 PACKAGES_TO_ADD=(
+    "app-eselect/eselect-bzimage"
     "app-text/pastebunz"
     "app-admin/perl-cleaner"
     "sys-apps/grep"
@@ -84,6 +85,30 @@ equo i "${PACKAGES_TO_ADD[@]}"
 mkdir /etc/portage/repos.conf/
 mkdir /var/lib/layman/
 layman-updater -R
+
+# Upgrading kernel to latest version
+kernel_target_pkg="sys-kernel/linux-sabayon"
+
+available_kernel=$(equo match "${kernel_target_pkg}" -q --showslot)
+echo
+echo "@@ Upgrading kernel to ${available_kernel}"
+echo
+kernel-switcher switch "${available_kernel}" || exit 1
+
+# now delete stale files in /lib/modules
+for slink in $(find /lib/modules/ -type l); do
+    if [ ! -e "${slink}" ]; then
+        echo "Removing broken symlink: ${slink}"
+        rm "${slink}" # ignore failure, best effort
+        # check if parent dir is empty, in case, remove
+        paren_slink=$(dirname "${slink}")
+        paren_children=$(find "${paren_slink}")
+        if [ -z "${paren_children}" ]; then
+            echo "${paren_slink} is empty, removing"
+            rmdir "${paren_slink}" # ignore failure, best effort
+        fi
+    fi
+done
 
 # Merging defaults configurations
 echo -5 | equo conf update
