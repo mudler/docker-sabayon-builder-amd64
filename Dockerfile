@@ -1,12 +1,6 @@
-FROM sabayon/base-amd64-squashed
+FROM sabayon/spinbase-amd64-squashed
 
 MAINTAINER mudler <mudler@sabayonlinux.org>
-
-# Accepting licenses needed to continue automatic install/upgrade
-ADD ./conf/spinbase-licenses /etc/entropy/packages/license.accept
-
-# Upgrading packages
-RUN equo up && equo u && echo -5 | equo conf update
 
 # Perform post-upgrade tasks (mirror sorting, updating repository db)
 ADD ./script/post-upgrade.sh /post-upgrade.sh
