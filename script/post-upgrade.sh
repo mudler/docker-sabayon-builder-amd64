@@ -73,6 +73,7 @@ PACKAGES_TO_ADD=(
     "app-crypt/gnupg"
     "sys-devel/gcc"
     "dev-vcs/git"
+    "app-portage/gentoolkit"
 )
 
 rsync -av -H -A -X --delete-during "rsync://rsync.at.gentoo.org/gentoo-portage/licenses/" "/usr/portage/licenses/"
