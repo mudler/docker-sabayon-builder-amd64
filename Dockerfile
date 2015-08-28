@@ -13,6 +13,6 @@ ENV HOME /root
 WORKDIR /root
 
 # Define default command.
-CMD ["emerge"]
+CMD ["/usr/bin/emerge"]
 
 
