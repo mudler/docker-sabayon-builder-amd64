@@ -12,7 +12,9 @@ ENV HOME /root
 # Define working directory.
 WORKDIR /root
 
+# Adding our builder script that will run also as entrypoint
+ADD ./script/builder /builder
+
 # Define default command.
-CMD ["/usr/bin/emerge"]
-
-
+#CMD ["/usr/bin/emerge"]
+CMD ["/builder"]

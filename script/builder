@@ -1,0 +1,55 @@
+#!/usr/bin/env perl
+
+my $profile = $ENV{BUILDER_PROFILE} // 3;
+my $jobs    = $ENV{BUILDER_JOBS}    // 1;
+
+$ENV{LC_ALL} = "en_US.UTF-8";    #here be dragons
+
+sub depgraph {
+    map { $_ =~ s/^.*\]|\s|\n//g; $_ }
+        grep {/\]/} qx/emerge -poq --color n @_/;
+}
+
+sub depgraph_atom {
+    map { $_ =~ s/^.*\]|\s|\n//g; &atom($_); $_ } grep {/\]/}
+        qx/emerge -poq --color n @_/;    #depth=0 it's all
+}
+
+# Input : complete gentoo package ($P)
+sub atom { s/-[0-9]{1,}.*$//; }
+
+sub say { print join( "\n", @_ ) . "\n"; }
+
+say "* Syncing stuff for you";
+
+# Syncronizing Portage and Entropy
+system("echo 'en_US.UTF-8 UTF-8' > /etc/locale.gen"); #be sure about that.
+system("cd /etc/portage/;git checkout master; git pull");
+system("eix-sync");
+qx|eselect profile set $profile|;
+qx{ls /usr/portage/licenses -1 | xargs -0 > /etc/entropy/packages/license.accept}
+    ;    #HAHA
+system("equo up && equo u"); # Better don't be behind
+qx|echo 'ACCEPT_LICENSE="*"' >> /etc/portage/make.conf|;    #just plain evil.
+
+say "* Ready to compile, finger crossed";
+
+# Separating packages from args
+my @args;
+my @packages;
+foreach my $value (@ARGV) {
+    if ( $value =~ /^\-/ ) {
+        push( @args, $value );
+    }
+    else {
+        push( @packages, $value );
+    }
+}
+
+my @packages_deps = depgraph(@packages);
+say @packages_deps;
+
+system("equo i $_") for @packages_deps;
+
+system("emerge @args -j $jobs --buildpkg @packages");
+
