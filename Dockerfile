@@ -15,6 +15,9 @@ WORKDIR /root
 # Adding our builder script that will run also as entrypoint
 ADD ./script/builder /builder
 
+# Define standard volumes
+VOLUME ["/usr/portage", "/usr/portage/distfiles", "/usr/portage/packages"]
+
 # Define default command.
 #CMD ["/usr/bin/emerge"]
 CMD ["/builder"]
