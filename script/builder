@@ -1,7 +1,17 @@
 #!/usr/bin/env perl
 
+use Getopt::Long;
+
+
 my $profile = $ENV{BUILDER_PROFILE} // 3;
 my $jobs    = $ENV{BUILDER_JOBS}    // 1;
+my @overlays;
+
+GetOptions('layman:s{,}' => \@overlays);
+
+if (@ARGV==0) {
+	help();die();
+}
 
 $ENV{LC_ALL} = "en_US.UTF-8";    #here be dragons
 
@@ -20,11 +30,28 @@ sub atom { s/-[0-9]{1,}.*$//; }
 
 sub say { print join( "\n", @_ ) . "\n"; }
 
+sub help {
+say "You should feed me with something", "$0 app-text/tree" , "$0 --layman kde plasma-meta";
+}
+
+
+if(@overlays>0){
+	say "Overlay(s) to add", "";
+	foreach my $overlay (@overlays){
+		say "\t- $overlay";
+	}
+}
+
+say "Installing:", "";
+
+say "\t* ".$_ for @ARGV;
+
 say "* Syncing stuff for you";
 
 # Syncronizing Portage and Entropy
 system("echo 'en_US.UTF-8 UTF-8' > /etc/locale.gen"); #be sure about that.
 system("cd /etc/portage/;git checkout master; git pull");
+system("echo 'y' | layman -f -a $_") for @overlays;
 system("eix-sync");
 qx|eselect profile set $profile|;
 qx{ls /usr/portage/licenses -1 | xargs -0 > /etc/entropy/packages/license.accept}
