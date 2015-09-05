@@ -16,7 +16,7 @@ WORKDIR /root
 ADD ./script/builder /builder
 
 # Define standard volumes
-VOLUME ["/usr/portage", "/usr/portage/distfiles", "/usr/portage/packages"]
+VOLUME ["/usr/portage", "/usr/portage/distfiles", "/usr/portage/packages", "/var/lib/entropy/client/packages"]
 
 # Define default command.
 #CMD ["/usr/bin/emerge"]
