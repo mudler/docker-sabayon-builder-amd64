@@ -16,12 +16,12 @@ if (@ARGV==0) {
 $ENV{LC_ALL} = "en_US.UTF-8";    #here be dragons
 
 sub depgraph {
-    map { $_ =~ s/^.*\]|\s|\n//g; $_ }
+    map { $_ =~ s/^.*\]|\:\:.*$|\s|\n//g;  $_ }
         grep {/\]/} qx/emerge -poq --color n @_/;
 }
 
 sub depgraph_atom {
-    map { $_ =~ s/^.*\]|\s|\n//g; &atom($_); $_ } grep {/\]/}
+    map { $_ =~ s/^.*\]|\:\:.*$|\s|\n//g; &atom($_); $_ } grep {/\]/}
         qx/emerge -poq --color n @_/;    #depth=0 it's all
 }
 
@@ -36,7 +36,7 @@ sub help {
 
 
 if(@overlays>0){
-	say "Overlay(s) to add", "";
+	say "Overlay(s) to add";
 	foreach my $overlay (@overlays){
 		say "\t- $overlay";
 	}
@@ -73,8 +73,10 @@ foreach my $value (@ARGV) {
     }
 }
 
-my @packages_deps = depgraph(@packages);
-say @packages_deps;
+my @packages_deps = depgraph_atom(@packages);
+push(@packages_deps,depgraph(@packages));
+say "Installing those deps with equo",@packages_deps;
+
 
 system("equo i $_") for @packages_deps;
 
