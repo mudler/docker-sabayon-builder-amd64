@@ -75,6 +75,7 @@ PACKAGES_TO_ADD=(
     "sys-devel/base-gcc"
     "dev-vcs/git"
     "app-portage/gentoolkit"
+    "net-misc/openssh"
 )
 
 rsync -av -H -A -X --delete-during "rsync://rsync.at.gentoo.org/gentoo-portage/licenses/" "/usr/portage/licenses/"
