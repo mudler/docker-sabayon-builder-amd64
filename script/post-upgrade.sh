@@ -72,6 +72,7 @@ PACKAGES_TO_ADD=(
     "net-misc/rsync"
     "app-crypt/gnupg"
     "sys-devel/gcc"
+    "sys-devel/base-gcc"
     "dev-vcs/git"
     "app-portage/gentoolkit"
 )
