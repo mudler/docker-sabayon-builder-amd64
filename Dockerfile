@@ -10,7 +10,7 @@ RUN /bin/bash /post-upgrade.sh  && rm -rf /post-upgrade.sh
 ENV HOME /root
 
 # Define working directory.
-WORKDIR /root
+WORKDIR /
 
 # Adding our builder script that will run also as entrypoint
 ADD ./script/builder /builder
@@ -19,5 +19,4 @@ ADD ./script/builder /builder
 VOLUME ["/usr/portage", "/usr/portage/distfiles", "/usr/portage/packages", "/var/lib/entropy/client/packages"]
 
 # Define default command.
-#CMD ["/usr/bin/emerge"]
-CMD ["/builder"]
+ENTRYPOINT ["/builder"]
