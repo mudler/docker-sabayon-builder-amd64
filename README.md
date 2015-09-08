@@ -29,16 +29,16 @@ The container expect as arguments the commands to be executed to emerge, it acts
 
 For example, if you want to build app-text/tree
 
-    docker run -ti --run sabayon/builder-amd64 app-text/tree
+    docker run -ti --rm sabayon/builder-amd64 app-text/tree
 
 Or a package available in an overlay
 
-    docker run -ti --run sabayon/builder-amd64 plasma-meta --layman kde
+    docker run -ti --rm sabayon/builder-amd64 plasma-meta --layman kde
 
 ## Check the volumes for your output
 
 you can inspect the volumes mounted by docker, or mounting externally the output directories (in such case /usr/portage/distfiles)
 
-    docker run -ti --run --rm -v "$PWD"/artifacts:/usr/portage/distfiles sabayon/builder-amd64 app-text/tree
+    docker run -ti --rm -v "$PWD"/artifacts:/usr/portage/packages sabayon/builder-amd64 app-text/tree
 
 e.g. now you can find your tbz2 in your current directory, inside the "artifacts" folder
