@@ -7,54 +7,38 @@ State: Alpha
 The purpose of this project is to provide an image of Sabayon docker-capable builder.
 It is just a [Sabayon base](https://github.com/mudler/docker-sabayon-base) with upgrades and compilation tools.
 
-Images are also on Docker Hub [sabayon/builder-amd64](https://registry.hub.docker.com/u/sabayon/builder-amd64/)
+Images are also on Docker Hub [sabayon/builder-amd64](https://registry.hub.docker.com/u/sabayon/builder-amd64/) [sabayon/builder-amd64-squashed](https://registry.hub.docker.com/u/sabayon/builder-amd64-squashed/).
 
-## First steps on docker
+## What is
+
+The docker container serves as a out-of-the-box builder for Sabayon.
+
+The image will run a script that will check that all the deps of your specified atom are available on entropy, and installs them before compiling the actual package; then, it will emerge and build the packages and it's dependency that are not already available on the official sabayon repository
+
+## How to use
+
+### 1) start docker
 
 Ensure to have the daemon started and running:
 
     sudo systemctl start docker
 
-## Building sabayon-spinbase locally
+### 2) build your packages
 
-    git clone https://github.com/mudler/docker-sabayon-builder-amd64.git docker-sabayon-builder
-    cd docker-sabayon-builder
-    sudo docker build -t sabayon/builder-amd64 .
+The container expect as arguments the commands to be executed to emerge, it acts like a wrapper with few enhancements.
 
-## Pulling sabayon-spinbase from Docker Hub
+For example, if you want to build app-text/tree
 
-    sudo docker pull sabayon/builder-amd64
+    docker run -ti --run sabayon/builder-amd64 app-text/tree
 
-## Converting the image from Docker to use it with [Molecules](https://github.com/Sabayon/molecules)
+Or a package available in an overlay
 
-### Only with undocker, without squashing the layers
+    docker run -ti --run sabayon/builder-amd64 plasma-meta --layman kde
 
-After pulling the docker image, install [undocker](https://github.com/larsks/undocker/) and then as root:
+## Check the volumes for your output
 
-    docker save sabayon/builder-amd64:latest | undocker -i -o spinbase sabayon/builder-amd64:latest
+you can inspect the volumes mounted by docker, or mounting externally the output directories (in such case /usr/portage/distfiles)
 
-### Using [docker-squash](https://github.com/jwilder/docker-squash)
-You can also squash the image with [docker-squash](https://github.com/jwilder/docker-squash) and then extract your layers.
+    docker run -ti --run --rm -v "$PWD"/artifacts:/usr/portage/distfiles sabayon/builder-amd64 app-text/tree
 
-    sudo docker save sabayon/builder-amd64:latest | sudo TMPDIR=/dev/shm docker-squash -t sabayon/builder-amd64:squashed > /your/prefered/path/Spinbase.tar
-
-You can replace /dev/shm with your prefered tmpdir
-
-### With undocker, but squashing the layers
-
-The squash can also been accomplished creating a container from the image, exporting it and then importing it back.
-
-    sudo docker run -t -i sabayon/builder-amd64:latest /bin/bash
-    $ exit # You should drop in a shell, exit, you should see a container id, otherwise find it :
-    sudo docker ps -l
-    sudo docker export <CONTAINER ID> | docker import - sabayon/builder-amd64:squashed
-    docker save sabayon/builder-amd64:squashed | undocker -i -o spinbase sabayon/builder-amd64:squashed
-
-Docker will loose the history revision and then you can estract the layer, using as base for chroot.
-
-You now have the tree on the *spinbase/* directory
-
-If you are planning to use the resulting files as a chroot, don't forget to set a nameserver on resolv.conf file
-
-    echo "nameserver 208.67.222.222" > spinbase/etc/resolv.conf
-
+e.g. now you can find your tbz2 in your current directory, inside the "artifacts" folder
