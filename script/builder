@@ -31,7 +31,7 @@ sub atom { s/-[0-9]{1,}.*$//; }
 sub say { print join( "\n", @_ ) . "\n"; }
 
 sub help {
-say "You should feed me with something", "$0 app-text/tree" , "$0 --layman kde plasma-meta";
+	say "You should feed me with something", "$0 app-text/tree" , "$0 plasma-meta --layman kde", "You can supply multiple overlays as well: $0 plasma-meta --layman kde plab";
 }
 
 
@@ -42,11 +42,11 @@ if(@overlays>0){
 	}
 }
 
-say "Installing:", "";
+say "Installing:";
 
 say "\t* ".$_ for @ARGV;
 
-say "* Syncing stuff for you";
+say "* Syncing stuff for you, if it's the first time, can take a while";
 
 # Syncronizing Portage and Entropy
 system("echo 'en_US.UTF-8 UTF-8' > /etc/locale.gen"); #be sure about that.
