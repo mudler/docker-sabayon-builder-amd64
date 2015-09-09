@@ -59,7 +59,6 @@ qx{ls /usr/portage/licenses -1 | xargs -0 > /etc/entropy/packages/license.accept
 system("equo up && equo u"); # Better don't be behind
 qx|echo 'ACCEPT_LICENSE="*"' >> /etc/portage/make.conf|;    #just plain evil.
 
-say "* Ready to compile, finger crossed";
 
 # Separating packages from args
 my @args;
@@ -79,6 +78,8 @@ say "Installing those deps with equo",@packages_deps;
 
 
 system("equo i $_") for @packages_deps;
+
+say "* Ready to compile, finger crossed";
 
 system("emerge @args -j $jobs --buildpkg @packages");
 
