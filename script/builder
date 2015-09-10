@@ -15,6 +15,15 @@ if (@ARGV==0) {
 
 $ENV{LC_ALL} = "en_US.UTF-8";    #here be dragons
 
+sub package_deps {
+    my $package = shift;
+    my $depth   = shift // 1;
+    my $atom    = shift // 0;
+    return
+        map { $_ =~ s/\[.*\]|\s//g; &atom($_) if $atom; $_ }
+        qx/equery -C -q g --depth=$depth $package/;    #depth=0 it's all
+}
+
 sub depgraph {
     map { $_ =~ s/^.*\]|\:\:.*$|\s|\n//g;  $_ }
         grep {/\]/} qx/emerge -poq --color n @_/;
@@ -72,10 +81,16 @@ foreach my $value (@ARGV) {
     }
 }
 
-my @packages_deps = depgraph_atom(@packages);
-push(@packages_deps,depgraph(@packages));
-say "Installing those deps with equo",@packages_deps;
-
+#my @packages_deps = depgraph_atom(@packages);
+#push(@packages_deps,depgraph(@packages));
+#say "Installing those deps with equo",@packages_deps;
+my @packages_deps;
+foreach my $p (@packages){
+        push(@packages_deps,package_deps($p,1,1));
+        push(@packages_deps,package_deps($p,1,0));
+}
+@packages_deps =  grep { defined() and length() } @packages_deps; #cleaning
+say "Installing those deps with equo", @packages_deps;
 
 system("equo i $_") for @packages_deps;
 
