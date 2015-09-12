@@ -124,5 +124,6 @@ system("equo i $_") for @packages_deps;
 
 say "* Ready to compile, finger crossed";
 
-system("emerge @args -j $jobs --buildpkg @packages");
+my $rt = system("emerge @args -j $jobs --buildpkg @packages");
 
+exit($rt >> 8);
